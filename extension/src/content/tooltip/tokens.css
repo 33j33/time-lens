@@ -1,0 +1,141 @@
+/**
+ * Time Lens Design Tokens
+ * EditorialNoir PaperCard aesthetic
+ * 
+ * Light mode: ink-on-paper (warm paper surfaces, ink text, warm borders)
+ * Dark mode: soot-on-parchment (near-black surfaces, parchment text, cocoa borders)
+ * Accent: vermilion for focus states, chips, and affordances
+ */
+
+/* Font faces - Newsreader for display, IBM Plex Mono for times */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/newsreader/Newsreader-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/ibm-plex-mono/IBMPlexMono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/ibm-plex-mono/IBMPlexMono-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/ibm-plex-mono/IBMPlexMono-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/ibm-plex-mono/IBMPlexMono-Bold.woff2') format('woff2');
+}
+
+/* Base tokens - Light mode (default) */
+:host {
+  /* Surfaces */
+  --tl-bg: #faf8f5;
+  --tl-surface: #f5f2ed;
+  --tl-surface2: #ebe7e0;
+  
+  /* Text */
+  --tl-text: #1a1815;
+  --tl-text-secondary: #4a4640;
+  --tl-muted: #8a857d;
+  
+  /* Borders */
+  --tl-border: #d9d4cb;
+  --tl-border-subtle: #e8e4dc;
+  
+  /* Accent - Vermilion */
+  --tl-accent: #d94f30;
+  --tl-accent-hover: #c44528;
+  --tl-accent-ink: #ffffff;
+  
+  /* Focus ring */
+  --tl-ring: rgba(217, 79, 48, 0.4);
+  
+  /* Shadows */
+  --tl-shadow-color: rgba(26, 24, 21, 0.08);
+  --tl-shadow-sm: 0 1px 2px var(--tl-shadow-color);
+  --tl-shadow-md: 0 4px 12px var(--tl-shadow-color), 0 2px 4px var(--tl-shadow-color);
+  --tl-shadow-lg: 0 8px 24px var(--tl-shadow-color), 0 4px 8px var(--tl-shadow-color);
+  
+  /* Paper wash gradients */
+  --tl-paper-wash-a: rgba(250, 248, 245, 0.9);
+  --tl-paper-wash-b: rgba(245, 242, 237, 0.95);
+  
+  /* Typography */
+  --tl-font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --tl-font-mono: 'IBM Plex Mono', 'SF Mono', 'Menlo', monospace;
+  
+  /* Sizing */
+  --tl-radius-sm: 4px;
+  --tl-radius-md: 8px;
+  --tl-radius-lg: 12px;
+  
+  /* Animation */
+  --tl-duration-fast: 120ms;
+  --tl-duration-normal: 180ms;
+  --tl-easing: cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+/* Dark mode tokens */
+@media (prefers-color-scheme: dark) {
+  :host {
+    /* Surfaces - soot tones */
+    --tl-bg: #1a1816;
+    --tl-surface: #242220;
+    --tl-surface2: #2e2b28;
+    
+    /* Text - parchment tones */
+    --tl-text: #f0ebe4;
+    --tl-text-secondary: #c4bdb2;
+    --tl-muted: #7a756d;
+    
+    /* Borders - cocoa */
+    --tl-border: #3d3935;
+    --tl-border-subtle: #302d29;
+    
+    /* Accent - Vermilion (slightly brighter for dark mode) */
+    --tl-accent: #e85a3c;
+    --tl-accent-hover: #f06a4c;
+    --tl-accent-ink: #1a1816;
+    
+    /* Focus ring */
+    --tl-ring: rgba(232, 90, 60, 0.5);
+    
+    /* Shadows */
+    --tl-shadow-color: rgba(0, 0, 0, 0.3);
+    
+    /* Paper wash gradients */
+    --tl-paper-wash-a: rgba(26, 24, 22, 0.95);
+    --tl-paper-wash-b: rgba(36, 34, 32, 0.98);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    --tl-duration-fast: 0ms;
+    --tl-duration-normal: 0ms;
+  }
+}
+

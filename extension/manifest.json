@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Time Lens",
+  "version": "0.1.0",
+  "description": "Smart time parser - convert selected times to your timezone with a hover tooltip",
+  "icons": {
+    "16": "assets/icons/icon16.svg",
+    "32": "assets/icons/icon32.svg",
+    "48": "assets/icons/icon48.svg",
+    "128": "assets/icons/icon128.svg"
+  },
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/icon16.svg",
+      "32": "assets/icons/icon32.svg",
+      "48": "assets/icons/icon48.svg"
+    },
+    "default_title": "Time Lens",
+    "default_popup": "popup/popup.html"
+  },
+  "permissions": [
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background/sw.js",
+    "type": "module"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/fonts/*"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

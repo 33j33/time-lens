@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Lens — Parsing Examples</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    :root {
+      --bg-deep: #0d0f12;
+      --bg-surface: #161a20;
+      --bg-raised: #1e2329;
+      --bg-hover: #262d36;
+      --text-primary: #e4e8ed;
+      --text-secondary: #8b9aab;
+      --text-muted: #5a6878;
+      --accent-teal: #38d9c4;
+      --accent-amber: #f5b642;
+      --accent-rose: #f56587;
+      --accent-violet: #a78bfa;
+      --border: #2a323d;
+      --radius: 12px;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Fraunces', Georgia, serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 100vh;
+      padding: 3rem 1.5rem 6rem;
+    }
+    
+    /* Decorative background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 20% 0%, rgba(56, 217, 196, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(167, 139, 250, 0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+    
+    h1 {
+      font-size: 2.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-teal) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    header p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+    
+    .category {
+      margin-bottom: 3rem;
+    }
+    
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .category-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    
+    .examples-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+    
+    .example {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      transition: all 0.2s ease;
+    }
+    
+    .example:hover {
+      background: var(--bg-raised);
+      border-color: var(--accent-teal);
+      transform: translateX(4px);
+    }
+    
+    .time-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--accent-teal);
+      margin-bottom: 0.35rem;
+      cursor: default;
+    }
+    
+    .time-description {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    
+    /* Accent variations */
+    .category:nth-child(odd) .time-value {
+      color: var(--accent-teal);
+    }
+    
+    .category:nth-child(even) .time-value {
+      color: var(--accent-amber);
+    }
+    
+    .category:nth-child(3n) .time-value {
+      color: var(--accent-violet);
+    }
+    
+    /* Inline times for prose sections */
+    .prose {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 3rem;
+    }
+    
+    .prose h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--accent-rose);
+    }
+    
+    .prose p {
+      margin-bottom: 1rem;
+      color: var(--text-secondary);
+    }
+    
+    .prose p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .time-inline {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg-raised);
+      padding: 0.15em 0.5em;
+      border-radius: 4px;
+      color: var(--accent-teal);
+      font-size: 0.95em;
+      white-space: nowrap;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    
+    footer a {
+      color: var(--accent-teal);
+      text-decoration: none;
+    }
+    
+    footer a:hover {
+      text-decoration: underline;
+    }
+    
+    /* Instructions callout */
+    .instructions {
+      background: linear-gradient(135deg, rgba(56, 217, 196, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
+      border: 1px solid var(--accent-teal);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .instructions p {
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+    
+    .instructions strong {
+      color: var(--accent-teal);
+    }
+    
+    .kbd {
+      display: inline-block;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.15em 0.5em;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85em;
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⏱ Time Lens Examples</h1>
+      <p>A showcase of parseable date and time formats</p>
+    </header>
+    
+    <div class="instructions">
+      <p>
+        <strong>How to use:</strong> Select any time value on this page, or hover over it 
+        with the Time Lens extension active. The extension will parse and convert the time 
+        to your configured timezone(s).
+      </p>
+    </div>
+
+    <!-- ISO 8601 Formats -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">📐</div>
+        <h2>ISO 8601 Formats</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">2025-01-03T15:30:00Z</div>
+          <div class="time-description">Full ISO with Zulu (UTC) timezone</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03T10:30:00-05:00</div>
+          <div class="time-description">ISO with negative UTC offset (Eastern Time)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03T21:00:00+05:30</div>
+          <div class="time-description">ISO with positive UTC offset (India Standard Time)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03T14:45:00</div>
+          <div class="time-description">ISO without timezone (local assumed)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03</div>
+          <div class="time-description">ISO date only</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- With Timezone Abbreviations -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">🌐</div>
+        <h2>Timezone Abbreviations</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">3:30 PM PST</div>
+          <div class="time-description">Pacific Standard Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">6:30 PM EST</div>
+          <div class="time-description">Eastern Standard Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">10:00 AM JST</div>
+          <div class="time-description">Japan Standard Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2:15 PM GMT</div>
+          <div class="time-description">Greenwich Mean Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">9:45 PM IST</div>
+          <div class="time-description">India Standard Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">11:30 AM CET</div>
+          <div class="time-description">Central European Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">4:00 AM AEST</div>
+          <div class="time-description">Australian Eastern Standard Time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">8:00 PM UTC</div>
+          <div class="time-description">Coordinated Universal Time</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Natural Language -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">💬</div>
+        <h2>Natural Language</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">tomorrow at 3pm</div>
+          <div class="time-description">Relative day with time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">next Friday at noon</div>
+          <div class="time-description">Next occurrence of weekday</div>
+        </div>
+        <div class="example">
+          <div class="time-value">yesterday morning</div>
+          <div class="time-description">Relative day with period</div>
+        </div>
+        <div class="example">
+          <div class="time-value">next Monday at 9:30 AM</div>
+          <div class="time-description">Upcoming weekday with specific time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">today at 5:00 PM</div>
+          <div class="time-description">Current day reference</div>
+        </div>
+        <div class="example">
+          <div class="time-value">this Saturday evening</div>
+          <div class="time-description">Day of week with time of day</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Relative Times -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">⏳</div>
+        <h2>Relative Times</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">in 2 hours</div>
+          <div class="time-description">Future relative time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">3 days ago</div>
+          <div class="time-description">Past relative time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">in 30 minutes</div>
+          <div class="time-description">Short duration from now</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2 weeks ago</div>
+          <div class="time-description">Weeks in the past</div>
+        </div>
+        <div class="example">
+          <div class="time-value">in 5 days</div>
+          <div class="time-description">Days from now</div>
+        </div>
+        <div class="example">
+          <div class="time-value">an hour ago</div>
+          <div class="time-description">Single unit past</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Standard Date Formats -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">📅</div>
+        <h2>Standard Date Formats</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">January 15, 2025</div>
+          <div class="time-description">Full month name</div>
+        </div>
+        <div class="example">
+          <div class="time-value">Jan 15, 2025</div>
+          <div class="time-description">Abbreviated month</div>
+        </div>
+        <div class="example">
+          <div class="time-value">01/15/2025</div>
+          <div class="time-description">US format (MM/DD/YYYY)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">15/01/2025</div>
+          <div class="time-description">International format (DD/MM/YYYY)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">15 Jan 2025</div>
+          <div class="time-description">Day-first with abbreviated month</div>
+        </div>
+        <div class="example">
+          <div class="time-value">March 3rd, 2025</div>
+          <div class="time-description">Ordinal date format</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Date + Time Combinations -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">🕐</div>
+        <h2>Date &amp; Time Combinations</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">January 3, 2025 at 2:30 PM</div>
+          <div class="time-description">Full date with 12-hour time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">Jan 3, 2025 14:30</div>
+          <div class="time-description">Abbreviated date with 24-hour time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">Friday, January 3rd at 4pm</div>
+          <div class="time-description">Weekday with full date and time</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03 09:00</div>
+          <div class="time-description">ISO-style date with space separator</div>
+        </div>
+        <div class="example">
+          <div class="time-value">03 Jan 2025, 18:45</div>
+          <div class="time-description">European style with comma</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Time-Only Formats -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">⏰</div>
+        <h2>Time-Only Formats</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">3:30 PM</div>
+          <div class="time-description">12-hour format with AM/PM</div>
+        </div>
+        <div class="example">
+          <div class="time-value">15:30</div>
+          <div class="time-description">24-hour format</div>
+        </div>
+        <div class="example">
+          <div class="time-value">9:45am</div>
+          <div class="time-description">Lowercase am/pm, no space</div>
+        </div>
+        <div class="example">
+          <div class="time-value">noon</div>
+          <div class="time-description">Named time of day</div>
+        </div>
+        <div class="example">
+          <div class="time-value">midnight</div>
+          <div class="time-description">Named time of day</div>
+        </div>
+        <div class="example">
+          <div class="time-value">10 o'clock</div>
+          <div class="time-description">Colloquial time expression</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explicit Offsets -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">🔢</div>
+        <h2>Explicit UTC Offsets</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">3:00 PM +00:00</div>
+          <div class="time-description">UTC offset (same as GMT/Zulu)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">10:30 AM -08:00</div>
+          <div class="time-description">Pacific Time offset</div>
+        </div>
+        <div class="example">
+          <div class="time-value">9:15 PM +05:30</div>
+          <div class="time-description">India offset (half-hour)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">11:45 AM +09:00</div>
+          <div class="time-description">Japan/Korea offset</div>
+        </div>
+        <div class="example">
+          <div class="time-value">6:00 AM -05:00</div>
+          <div class="time-description">Eastern Time offset</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2:30 PM +01:00</div>
+          <div class="time-description">Central European offset</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prose Example -->
+    <section class="prose">
+      <h3>📧 Real-World Example: Email Thread</h3>
+      <p>
+        Hey team! Just a reminder that our sync is scheduled for 
+        <span class="time-inline">tomorrow at 10:00 AM PST</span>. 
+        If you're joining from the London office, that's 
+        <span class="time-inline">6:00 PM GMT</span>.
+      </p>
+      <p>
+        The deadline for the Q1 report is <span class="time-inline">January 15, 2025 at 5:00 PM EST</span>. 
+        Please make sure all your updates are submitted <span class="time-inline">at least 2 hours</span> before.
+      </p>
+      <p>
+        The API maintenance window is from <span class="time-inline">2025-01-04T02:00:00Z</span> 
+        to <span class="time-inline">2025-01-04T04:00:00Z</span>. Plan accordingly!
+      </p>
+    </section>
+
+    <section class="prose">
+      <h3>📋 Real-World Example: Event Listing</h3>
+      <p>
+        <strong>Tech Conference 2025</strong><br>
+        📍 San Francisco, CA<br>
+        📆 <span class="time-inline">March 15-17, 2025</span><br>
+        🎤 Keynote: <span class="time-inline">March 15, 2025 at 9:00 AM PST</span><br>
+        🍕 Lunch: <span class="time-inline">12:30 PM</span><br>
+        🎉 After-party: <span class="time-inline">next Saturday at 7pm</span>
+      </p>
+    </section>
+
+    <section class="prose">
+      <h3>🔔 Real-World Example: Notification Log</h3>
+      <p>
+        • Build completed <span class="time-inline">5 minutes ago</span><br>
+        • Deployment scheduled for <span class="time-inline">in 30 minutes</span><br>
+        • Last backup: <span class="time-inline">2025-01-02T23:00:00+00:00</span><br>
+        • Next maintenance: <span class="time-inline">next Sunday at midnight</span>
+      </p>
+    </section>
+
+    <!-- Unix/Epoch Timestamps -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">🖥️</div>
+        <h2>Technical Formats</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">Fri Jan 03 2025 15:30:00 GMT+0000</div>
+          <div class="time-description">JavaScript Date.toString() format</div>
+        </div>
+        <div class="example">
+          <div class="time-value">Fri, 03 Jan 2025 15:30:00 GMT</div>
+          <div class="time-description">RFC 2822 / HTTP date format</div>
+        </div>
+        <div class="example">
+          <div class="time-value">2025-01-03T15:30:00.000Z</div>
+          <div class="time-description">ISO 8601 with milliseconds</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Edge Cases -->
+    <section class="category">
+      <div class="category-header">
+        <div class="category-icon">🧪</div>
+        <h2>Edge Cases &amp; Special Formats</h2>
+      </div>
+      <div class="examples-grid">
+        <div class="example">
+          <div class="time-value">December 31, 2024 at 11:59 PM</div>
+          <div class="time-description">End of year</div>
+        </div>
+        <div class="example">
+          <div class="time-value">January 1, 2025 at 00:00</div>
+          <div class="time-description">Start of year (midnight)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">Feb 29, 2024</div>
+          <div class="time-description">Leap day</div>
+        </div>
+        <div class="example">
+          <div class="time-value">12:00 AM</div>
+          <div class="time-description">Midnight (start of day)</div>
+        </div>
+        <div class="example">
+          <div class="time-value">12:00 PM</div>
+          <div class="time-description">Noon</div>
+        </div>
+        <div class="example">
+          <div class="time-value">the day after tomorrow</div>
+          <div class="time-description">Complex relative expression</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>
+        Time Lens Extension — Select or hover over any time to convert it.<br>
+        Powered by <a href="https://github.com/wanasit/chrono" target="_blank">chrono-node</a> 
+        and <a href="https://moment.github.io/luxon/" target="_blank">Luxon</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>
+

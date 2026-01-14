@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320">
+  <title>Time Lens</title>
+  <style>
+    :root {
+      --bg: #faf8f5;
+      --surface: #f5f2ed;
+      --surface2: #ebe7e0;
+      --text: #1a1815;
+      --text-secondary: #4a4640;
+      --muted: #8a857d;
+      --border: #d9d4cb;
+      --border-subtle: #e8e4dc;
+      --accent: #d94f30;
+      --accent-hover: #c44528;
+      --accent-ink: #ffffff;
+      --ring: rgba(217, 79, 48, 0.4);
+      --success: #2e7d32;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1816;
+        --surface: #242220;
+        --surface2: #2e2b28;
+        --text: #f0ebe4;
+        --text-secondary: #c4bdb2;
+        --muted: #7a756d;
+        --border: #3d3935;
+        --border-subtle: #302d29;
+        --accent: #e85a3c;
+        --accent-hover: #f06a4c;
+        --accent-ink: #1a1816;
+        --ring: rgba(232, 90, 60, 0.5);
+        --success: #66bb6a;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      line-height: 1.4;
+      color: var(--text);
+      background: var(--bg);
+      width: 320px;
+      min-height: 100px;
+    }
+
+    .popup {
+      padding: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Enable Section */
+    .enable-section {
+      margin-bottom: 16px;
+    }
+
+    .enable-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    .btn--primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    .btn--primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn--disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-icon {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Toggle button */
+    .btn--toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn--toggle:hover {
+      background: var(--surface2);
+    }
+
+    .btn--toggle.btn--enabled {
+      border-color: var(--success);
+      background: rgba(46, 125, 50, 0.08);
+    }
+
+    .toggle-indicator {
+      width: 36px;
+      height: 20px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    .toggle-indicator::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      background: var(--muted);
+      border-radius: 50%;
+      transition: all 0.15s ease;
+    }
+
+    .btn--enabled .toggle-indicator {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .btn--enabled .toggle-indicator::after {
+      left: calc(100% - 16px);
+      background: white;
+    }
+
+    .toggle-text {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* Settings */
+    .settings {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .field-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    select {
+      flex: 1;
+      max-width: 160px;
+      padding: 6px 24px 6px 8px;
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%234a4640' d='M2.5 3.5L5 6L7.5 3.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    select:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--ring);
+    }
+
+    /* Target Zones */
+    .zones-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      min-height: 32px;
+    }
+
+    .zone-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+    }
+
+    .zone-tag-remove {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 14px;
+      height: 14px;
+      font-size: 12px;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .zone-tag-remove:hover {
+      color: var(--accent);
+    }
+
+    .add-zone-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .add-zone-row select {
+      flex: 1;
+      max-width: none;
+    }
+
+    .add-zone-row .btn {
+      flex: 0;
+      padding: 6px 12px;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border-subtle);
+      margin: 4px 0;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+    }
+
+    .footer-text {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* Message */
+    .message {
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+
+    .message--success {
+      background: rgba(46, 125, 50, 0.1);
+      color: var(--success);
+    }
+
+    .message--error {
+      background: rgba(217, 79, 48, 0.1);
+      color: var(--accent);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="popup">
+    <!-- Header -->
+    <div class="header">
+      <svg class="logo" viewBox="0 0 28 28" fill="none">
+        <circle cx="14" cy="14" r="12" stroke="#d94f30" stroke-width="2" fill="currentColor" style="color: var(--bg)"/>
+        <path d="M14 7V14L18.5 18.5" stroke="var(--text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="14" cy="14" r="1.5" fill="#d94f30"/>
+      </svg>
+      <span class="title">Time Lens</span>
+    </div>
+
+    <!-- Message area -->
+    <div class="message hidden" id="message"></div>
+
+    <!-- Enable Section -->
+    <div class="enable-section">
+      <button class="btn btn--toggle" id="toggle-btn">
+        <span class="toggle-indicator"></span>
+        <span class="toggle-text">Enabled</span>
+      </button>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Settings -->
+    <div class="settings">
+      <div class="field">
+        <div class="field-row">
+          <label class="field-label" for="source-zone">Source timezone</label>
+          <select id="source-zone"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-row">
+          <label class="field-label" for="primary-zone">Primary zone</label>
+          <select id="primary-zone"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="field-row">
+          <label class="field-label" for="format-preset">Format</label>
+          <select id="format-preset">
+            <option value="system">System</option>
+            <option value="short">Short</option>
+            <option value="long">Long</option>
+            <option value="iso">ISO 8601</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label">Target zones</label>
+        <div class="zones-container" id="target-zones"></div>
+        <div class="add-zone-row">
+          <select id="add-zone-select"></select>
+          <button class="btn" id="add-zone-btn">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <span class="footer-text">Select text → hover to convert</span>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
+

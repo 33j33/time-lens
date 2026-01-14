@@ -1,0 +1,24 @@
+{
+  "name": "time-lens",
+  "version": "0.1.0",
+  "description": "Smart time parser chrome extension - convert selected times to your timezone",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "vite build && BUILD_TARGET=content vite build",
+    "build:main": "vite build",
+    "build:content": "BUILD_TARGET=content vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.0.3",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  },
+  "dependencies": {
+    "chrono-node": "^2.7.6",
+    "luxon": "^3.4.4"
+  }
+}
