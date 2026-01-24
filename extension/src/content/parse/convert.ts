@@ -6,7 +6,7 @@
 import { DateTime } from 'luxon';
 import type { ParsedTime, ConvertedTime, ParseResult, Settings } from '@/shared/types';
 import type { ChronoParseResult } from './chrono';
-import { resolveSourceZone, getZoneLabel, isOffset, offsetToMinutes } from './timezone';
+import { resolveSourceZone, getZoneLabel, isOffset } from './timezone';
 import { formatTime } from './format';
 
 /**
@@ -20,28 +20,26 @@ export function convertTime(
   // Resolve the source timezone
   const sourceZone = resolveSourceZone(
     parseResult.explicitOffset,
-    parseResult.abbreviation,
-    settings,
-    origin
+    parseResult.abbreviation
   );
 
   // Create a DateTime from the parsed date in the source timezone
   let sourceDateTime: DateTime;
 
   try {
-    if (isOffset(sourceZone)) {
-      // For offset-based zones, create with the offset
-      const offsetMinutes = offsetToMinutes(sourceZone);
-      sourceDateTime = DateTime.fromJSDate(parseResult.date, { zone: 'UTC' })
-        .minus({ minutes: parseResult.date.getTimezoneOffset() })
-        .plus({ minutes: offsetMinutes })
-        .setZone(`UTC${sourceZone}`);
+    if (parseResult.explicitOffset) {
+      // Explicit offset like +05:30 or Z in the text - chrono handles these correctly
+      // Just use the date as-is since chrono already adjusted for the offset
+      sourceDateTime = DateTime.fromJSDate(parseResult.date);
     } else if (sourceZone === 'local') {
-      // Local timezone
+      // Source zone is local (either no explicit TZ in text, or abbreviation mapped to local)
       sourceDateTime = DateTime.fromJSDate(parseResult.date);
     } else {
-      // IANA timezone - chrono parses in local, so we need to interpret in the source zone
+      // Source zone is an IANA zone or offset (from abbreviation or user settings)
+      // Chrono parses times in local, so we need to re-interpret the time components
+      // in the actual source zone
       const localDt = DateTime.fromJSDate(parseResult.date);
+      const zone = isOffset(sourceZone) ? `UTC${sourceZone}` : sourceZone;
       sourceDateTime = DateTime.fromObject(
         {
           year: localDt.year,
@@ -51,7 +49,7 @@ export function convertTime(
           minute: localDt.minute,
           second: localDt.second,
         },
-        { zone: sourceZone }
+        { zone }
       );
     }
 
@@ -82,31 +80,19 @@ export function convertTime(
     isoString: localDateTime.toISO() ?? '',
   };
 
-  // Convert to primary target zone
-  const primaryDateTime = convertToZone(sourceDateTime, settings.primaryTargetZone);
-  const primary: ConvertedTime = {
-    zone: settings.primaryTargetZone,
-    label: getZoneLabel(settings.primaryTargetZone),
-    formatted: formatTime(primaryDateTime, settings.formatPreset, settings.customFormat),
-    isoString: primaryDateTime.toISO() ?? '',
+  // Convert to default target zone
+  const targetDateTime = convertToZone(sourceDateTime, settings.defaultTargetZone);
+  const target: ConvertedTime = {
+    zone: settings.defaultTargetZone,
+    label: getZoneLabel(settings.defaultTargetZone),
+    formatted: formatTime(targetDateTime, settings.formatPreset, settings.customFormat),
+    isoString: targetDateTime.toISO() ?? '',
   };
-
-  // Convert to all target zones
-  const targets: ConvertedTime[] = settings.targetZones.map((zone) => {
-    const targetDateTime = convertToZone(sourceDateTime, zone);
-    return {
-      zone,
-      label: getZoneLabel(zone),
-      formatted: formatTime(targetDateTime, settings.formatPreset, settings.customFormat),
-      isoString: targetDateTime.toISO() ?? '',
-    };
-  });
 
   return {
     parsed,
     local,
-    primary,
-    targets,
+    target,
   };
 }
 
@@ -125,5 +111,3 @@ function convertToZone(dt: DateTime, zone: string): DateTime {
   return dt.setZone(zone);
 }
 
-// Note: parseAndConvert was removed to avoid circular dependency
-// Use parseTime from chrono.ts and convertTime from this module separately

@@ -4,10 +4,11 @@
  */
 
 import { injectContentScripts } from './permissions';
-import { loadSettings } from '@/options/storage';
+import { loadSettings } from '@/shared/storage';
+import { isEnabledForOrigin, getOrigin } from '@/shared/origin-settings';
 
 // ============================================================================
-// Navigation Handler (inject on all sites when enabled)
+// Navigation Handler (inject on enabled sites)
 // ============================================================================
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
@@ -22,10 +23,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   }
 
   try {
-    // Check if Time Lens is enabled
+    // Check if Time Lens is enabled for this site
     const settings = await loadSettings();
+    const origin = getOrigin(tab.url);
     
-    if (settings.enabled) {
+    if (isEnabledForOrigin(settings, origin)) {
       await injectContentScripts(tabId);
     }
   } catch (error) {

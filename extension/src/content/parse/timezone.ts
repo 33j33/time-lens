@@ -3,8 +3,6 @@
  * Maps abbreviations to IANA zones and resolves source zones
  */
 
-import type { Settings } from '@/shared/types';
-
 /**
  * Common timezone abbreviations mapped to IANA zones or UTC offsets
  * Note: Some abbreviations are ambiguous (e.g., IST could be India, Israel, or Ireland)
@@ -84,13 +82,11 @@ export function getZoneLabel(zone: string): string {
 
 /**
  * Resolve the source timezone for a parsed time
- * Priority: explicit offset > abbreviation > per-site override > default
+ * Priority: explicit offset > abbreviation > local
  */
 export function resolveSourceZone(
   explicitOffset: string | undefined,
-  abbreviation: string | undefined,
-  settings: Settings,
-  origin?: string
+  abbreviation: string | undefined
 ): string {
   // 1. Explicit offset in the text takes highest priority
   if (explicitOffset) {
@@ -102,13 +98,8 @@ export function resolveSourceZone(
     return TIMEZONE_ABBREVIATIONS[abbreviation];
   }
 
-  // 3. Per-site override
-  if (origin && settings.perSiteSourceZone[origin]) {
-    return settings.perSiteSourceZone[origin];
-  }
-
-  // 4. Default source zone from settings
-  return settings.defaultSourceZone;
+  // 3. Default to local timezone
+  return 'local';
 }
 
 /**

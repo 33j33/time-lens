@@ -51,7 +51,7 @@ export function parseTime(
   try {
     // Parse with chrono-node
     const results = chrono.parse(trimmedText);
-    
+    console.log(results);
     if (signal?.aborted) {
       return null;
     }

@@ -2,72 +2,58 @@
  * Time Lens Content Script Entry Point
  * 
  * FLOW:
- * 1. User selects text → tooltip shows immediately if parseable
- * 2. Tooltip stays for 4 seconds, or until user hovers over it
- * 3. Once hovered, tooltip stays until pointer leaves
+ * 1. User selects text → if parseable, show panel in top-right corner
+ * 2. Panel stays visible while selection is valid
+ * 3. Panel is draggable so user can move it out of the way
  */
 
-import { TooltipState, DEFAULT_SETTINGS } from '@/shared/types';
+import { DEFAULT_SETTINGS } from '@/shared/types';
+import { isEnabledForOrigin } from '@/shared/origin-settings';
 import type { SelectionSnapshot, Settings, ParseResult } from '@/shared/types';
-import { startSelectionTracking, stopSelectionTracking, onSelectionChange } from './selection';
-import { setTooltipElement, onTooltipHover, cancelCloseTimer, startAutoDismissTimer, stopHoverTracking } from './hover';
-import { createTooltip } from './tooltip/tooltip';
-import { parseTime } from '@/parse/chrono';
-import { convertTime } from '@/parse/convert';
-import { loadSettings, saveSettings, onSettingsChange as onStorageSettingsChange } from '@/options/storage';
+import { startSelectionTracking, stopSelectionTracking, registerSelectionChangeCallback } from './selection';
+import { createPanel } from './panel/panel';
+import { parseTime } from './parse/chrono';
+import { convertTime } from './parse/convert';
+import { loadSettings, saveSettings, onSettingsChange as onStorageSettingsChange } from '@/shared/storage';
+
+// Current page origin
+const currentOrigin = window.location.origin;
 
 // ============================================================================
 // State
 // ============================================================================
 
-let state: TooltipState = TooltipState.IDLE;
 let currentSnapshot: SelectionSnapshot | null = null;
 let settings: Settings = { ...DEFAULT_SETTINGS };
+let visible = false;
 
 // Parse cache
 let lastParsedVersion = -1;
 let lastParseResult: ParseResult | null = null;
 let lastParseFailureVersion = -1;
 
-// Tooltip controller
-let tooltip: ReturnType<typeof createTooltip> | null = null;
+// Panel controller
+let panel: ReturnType<typeof createPanel> | null = null;
 
 // Abort controller for parsing
 let parseAbortController: AbortController | null = null;
 
 // Guard against multiple initializations
 let initialized = false;
+let storageUnsubscribe: (() => void) | null = null;
 
 // ============================================================================
-// State Machine
+// Panel Management
 // ============================================================================
 
-function setState(newState: TooltipState): void {
-  if (state === newState) return;
-  state = newState;
-}
-
-// ============================================================================
-// Tooltip Management
-// ============================================================================
-
-function showTooltip(result: ParseResult, x: number, y: number): void {
-  if (!tooltip) return;
+function updatePanel(result: ParseResult): void {
+  if (!panel) return;
   
-  tooltip.show(result, x, y);
-  setState(TooltipState.PREVIEW);
-  startAutoDismissTimer();
-}
-
-function hideTooltip(): void {
-  if (!tooltip) return;
-  
-  tooltip.hide();
-  setState(TooltipState.IDLE);
-  
-  if (parseAbortController) {
-    parseAbortController.abort();
-    parseAbortController = null;
+  if (!visible) {
+    panel.show(result);
+    visible = true;
+  } else {
+    panel.updateResult(result);
   }
 }
 
@@ -124,57 +110,31 @@ function handleSelectionChange(snapshot: SelectionSnapshot | null): void {
   if (snapshot) {
     const result = tryParse(snapshot);
     if (result) {
-      showTooltip(result, snapshot.anchorX, snapshot.anchorY);
-    } else if (state !== TooltipState.IDLE) {
-      hideTooltip();
+      updatePanel(result);
     }
-  } else {
-    hideTooltip();
   }
 }
 
-function handleTooltipHover(isHovering: boolean): void {
-  if (isHovering) {
-    cancelCloseTimer();
-    if (state === TooltipState.PREVIEW) {
-      setState(TooltipState.PINNED);
-    }
-  } else {
-    hideTooltip();
-  }
-}
 
-function handleKeyDown(event: KeyboardEvent): void {
-  if (event.key === 'Escape') {
-    cancelCloseTimer();
-    hideTooltip();
-  }
-}
-
-function handleScrollResize(): void {
-  if (state !== TooltipState.IDLE) {
-    cancelCloseTimer();
-    hideTooltip();
-  }
-}
-
-function handleVisibilityChange(): void {
-  if (document.hidden && state !== TooltipState.IDLE) {
-    cancelCloseTimer();
-    hideTooltip();
-  }
-}
 
 function handleSettingsUpdate(newSettings: Partial<Settings>): void {
   settings = { ...settings, ...newSettings };
   saveSettings(settings).catch(console.error);
   
-  if (currentSnapshot && state !== TooltipState.IDLE) {
+  if (currentSnapshot && visible && panel) {
+    // Update panel settings without rendering (we'll render after updating result)
+    panel.updateSettings(settings, false);
+    
+    // Regenerate result with new settings
     lastParsedVersion = -1;
     const result = tryParse(currentSnapshot);
-    if (result && tooltip) {
-      tooltip.updateResult(result);
+    if (result) {
+      // This will render with both new settings and new result
+      panel.updateResult(result);
     }
+  } else if (panel) {
+    // Just update settings if no active result (render this time)
+    panel.updateSettings(settings, true);
   }
 }
 
@@ -191,53 +151,25 @@ async function initialize(): Promise<void> {
     settings = { ...DEFAULT_SETTINGS };
   }
   
-  if (!settings.enabled) return;
+  // Check if enabled for current site
+  if (!isEnabledForOrigin(settings, currentOrigin)) return;
   
   initialized = true;
   
-  tooltip = createTooltip(settings, handleSettingsUpdate);
-  setTooltipElement(tooltip.getElement());
+  panel = createPanel(settings, handleSettingsUpdate);
   
   startSelectionTracking();
-  onSelectionChange(handleSelectionChange);
-  onTooltipHover(handleTooltipHover);
-  
-  document.addEventListener('keydown', handleKeyDown);
-  window.addEventListener('scroll', handleScrollResize, { capture: true, passive: true });
-  window.addEventListener('resize', handleScrollResize, { passive: true });
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-  
-  onStorageSettingsChange((newSettings) => {
-    if (!newSettings.enabled && initialized) {
-      cleanup();
-      return;
-    }
-    
-    settings = newSettings;
-    if (currentSnapshot && state !== TooltipState.IDLE) {
-      lastParsedVersion = -1;
-      const result = tryParse(currentSnapshot);
-      if (result && tooltip) {
-        tooltip.updateResult(result);
-      }
-    }
-  });
+  registerSelectionChangeCallback(handleSelectionChange);
 }
 
 function cleanup(): void {
   if (!initialized) return;
   
   stopSelectionTracking();
-  stopHoverTracking();
   
-  document.removeEventListener('keydown', handleKeyDown);
-  window.removeEventListener('scroll', handleScrollResize, { capture: true });
-  window.removeEventListener('resize', handleScrollResize);
-  document.removeEventListener('visibilitychange', handleVisibilityChange);
-  
-  if (tooltip) {
-    tooltip.destroy();
-    tooltip = null;
+  if (panel) {
+    panel.destroy();
+    panel = null;
   }
   
   if (parseAbortController) {
@@ -245,8 +177,47 @@ function cleanup(): void {
     parseAbortController = null;
   }
   
+  currentSnapshot = null;
+  visible = false;
+  lastParsedVersion = -1;
+  lastParseResult = null;
+  lastParseFailureVersion = -1;
+  
   initialized = false;
 }
 
-window.addEventListener('beforeunload', cleanup);
+// Set up storage change listener (only once)
+storageUnsubscribe = onStorageSettingsChange((newSettings) => {
+  // Check if disabled for current site
+  if (!isEnabledForOrigin(newSettings, currentOrigin) && initialized) {
+    cleanup();
+    return;
+  }
+  
+  // Check if enabled for current site but not initialized - re-initialize
+  if (isEnabledForOrigin(newSettings, currentOrigin) && !initialized) {
+    initialize();
+    return;
+  }
+  
+  settings = newSettings;
+  
+  if (currentSnapshot && visible && panel) {
+    // Update panel settings without rendering (we'll render after updating result)
+    panel.updateSettings(settings, false);
+    
+    // Regenerate result with new settings
+    lastParsedVersion = -1;
+    const result = tryParse(currentSnapshot);
+    if (result) {
+      // This will render with both new settings and new result
+      panel.updateResult(result);
+    }
+  } else if (panel) {
+    // Just update settings if no active result (render this time)
+    panel.updateSettings(settings, true);
+  }
+});
+
+// Initial initialization
 initialize();

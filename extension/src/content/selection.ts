@@ -39,24 +39,11 @@ function createSnapshot(): SelectionSnapshot | null {
     return null;
   }
   
-  // Get the selection's bounding rect for tooltip positioning
-  const range = selection.getRangeAt(0);
-  const rect = range.getBoundingClientRect();
-  
-  // If rect has no size, selection might be in an unsupported element
-  if (rect.width === 0 && rect.height === 0) {
-    return null;
-  }
-  
-  // Increment version
   currentVersion++;
   
-  // Anchor tooltip at bottom-left of selection
   return {
     version: currentVersion,
     text: text.slice(0, MAX_TEXT_LENGTH),
-    anchorX: rect.left,
-    anchorY: rect.bottom,
     sourceHint: {
       origin: window.location.origin,
     },
@@ -91,7 +78,7 @@ function handleSelectionChange(): void {
  * Subscribe to selection changes
  * @returns Unsubscribe function
  */
-export function onSelectionChange(callback: SelectionChangeCallback): () => void {
+export function registerSelectionChangeCallback(callback: SelectionChangeCallback): () => void {
   callbacks.add(callback);
   
   return () => {

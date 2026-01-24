@@ -3,19 +3,6 @@
  */
 
 // ============================================================================
-// Tooltip State Machine
-// ============================================================================
-
-export enum TooltipState {
-  /** No valid selection or tooltip hidden */
-  IDLE = 'IDLE',
-  /** Tooltip visible, will hide when pointer leaves tooltip */
-  PREVIEW = 'PREVIEW',
-  /** Tooltip visible + pointer is inside tooltip. Stays until pointer leaves. */
-  PINNED = 'PINNED',
-}
-
-// ============================================================================
 // Selection Snapshot
 // ============================================================================
 
@@ -24,9 +11,6 @@ export interface SelectionSnapshot {
   version: number;
   /** Trimmed selection text (capped at 200 chars) */
   text: string;
-  /** Anchor point for tooltip (bottom-left of selection) */
-  anchorX: number;
-  anchorY: number;
   /** For per-site settings lookup */
   sourceHint: {
     origin: string;
@@ -66,10 +50,8 @@ export interface ParseResult {
   parsed: ParsedTime;
   /** Local time conversion */
   local: ConvertedTime;
-  /** Primary target zone conversion */
-  primary: ConvertedTime;
-  /** All configured target zone conversions */
-  targets: ConvertedTime[];
+  /** Default target zone conversion */
+  target: ConvertedTime;
 }
 
 // ============================================================================
@@ -79,35 +61,25 @@ export interface ParseResult {
 export type FormatPreset = 'system' | 'iso' | 'short' | 'long' | 'custom';
 
 export interface Settings {
-  /** Whether Time Lens is globally enabled */
-  enabled: boolean;
-  /** Default source timezone when not explicit in text */
-  defaultSourceZone: 'local' | string;
-  /** List of target timezones to convert to */
-  targetZones: string[];
-  /** The primary target zone to show prominently */
-  primaryTargetZone: 'local' | string;
+  /** Per-site enabled state (key is origin, e.g., 'https://github.com') */
+  enabledSites: Record<string, boolean>;
+  /** The default target zone to convert to */
+  defaultTargetZone: 'local' | string;
   /** Format preset for displaying times */
   formatPreset: FormatPreset;
   /** Custom Luxon format string when formatPreset is 'custom' */
   customFormat: string;
-  /** Per-site source timezone overrides */
-  perSiteSourceZone: Record<string, string>;
 }
-
 
 // ============================================================================
 // Default Settings
 // ============================================================================
 
 export const DEFAULT_SETTINGS: Settings = {
-  enabled: true,
-  defaultSourceZone: 'local',
-  targetZones: ['local', 'America/New_York', 'America/Los_Angeles', 'Europe/London', 'Asia/Tokyo'],
-  primaryTargetZone: 'local',
+  enabledSites: {},
+  defaultTargetZone: 'local',
   formatPreset: 'system',
   customFormat: 'ff',
-  perSiteSourceZone: {},
 };
 
 // ============================================================================
