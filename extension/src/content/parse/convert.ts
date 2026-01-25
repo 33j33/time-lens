@@ -18,17 +18,13 @@ export function convertTime(
   origin?: string
 ): ParseResult | null {
   // Resolve the source timezone
-  const sourceZone = resolveSourceZone(
-    parseResult.explicitOffset,
-    parseResult.abbreviation
-  );
+  const sourceZone = resolveSourceZone(parseResult.timezoneOffsetMinutes);
 
   console.log('[Time Lens] Convert debug:', {
     matchedText: parseResult.matchedText,
     date: parseResult.date,
     dateISO: parseResult.date.toISOString(),
-    explicitOffset: parseResult.explicitOffset,
-    abbreviation: parseResult.abbreviation,
+    timezoneOffsetMinutes: parseResult.timezoneOffsetMinutes,
     hasExplicitTimezone: parseResult.hasExplicitTimezone,
     sourceZone,
   });
@@ -75,7 +71,6 @@ export function convertTime(
     isoString: sourceDateTime.toISO() ?? '',
     sourceZone,
     sourceZoneExplicit: parseResult.hasExplicitTimezone,
-    abbreviation: parseResult.abbreviation,
   };
 
   // Convert to local time

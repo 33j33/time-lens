@@ -3,7 +3,7 @@
  * Maps abbreviations to IANA zones and resolves source zones
  */
 
-import { TIMEZONE_ABBREVIATIONS, COMMON_TIMEZONES } from '@/shared/constants';
+import { COMMON_TIMEZONES } from '@/shared/constants';
 
 /**
  * Get display label for a timezone
@@ -25,41 +25,31 @@ export function getZoneLabel(zone: string): string {
 
 /**
  * Resolve the source timezone for a parsed time
- * Priority: explicit offset > abbreviation > local
+ * Returns the timezone offset in "+HH:MM" format, or 'local' if no timezone was specified
  */
 export function resolveSourceZone(
-  explicitOffset: string | undefined,
-  abbreviation: string | undefined
+  timezoneOffsetMinutes: number | undefined
 ): string {
-  // 1. Explicit offset in the text takes highest priority
-  if (explicitOffset) {
-    return explicitOffset;
+  // If explicit offset present, convert to "+HH:MM" format for Luxon
+  if (timezoneOffsetMinutes !== undefined) {
+    return minutesToOffset(timezoneOffsetMinutes);
   }
 
-  // 2. Known timezone abbreviation
-  if (abbreviation && TIMEZONE_ABBREVIATIONS[abbreviation]) {
-    return TIMEZONE_ABBREVIATIONS[abbreviation];
-  }
-
-  // 3. Default to local timezone
+  // Default to local timezone
   return 'local';
 }
 
 /**
- * Convert an offset string to minutes
- * e.g., '+05:30' -> 330, '-08:00' -> -480
+ * Convert offset in minutes to "+HH:MM" format
+ * e.g., 330 -> "+05:30", -480 -> "-08:00", 0 -> "+00:00"
  */
-export function offsetToMinutes(offset: string): number {
-  const match = offset.match(/^([+-])(\d{2}):(\d{2})$/);
-  if (!match) {
-    return 0;
-  }
+export function minutesToOffset(minutes: number): string {
+  const sign = minutes >= 0 ? '+' : '-';
+  const absMinutes = Math.abs(minutes);
+  const hours = Math.floor(absMinutes / 60);
+  const mins = absMinutes % 60;
   
-  const sign = match[1] === '+' ? 1 : -1;
-  const hours = parseInt(match[2], 10);
-  const minutes = parseInt(match[3], 10);
-  
-  return sign * (hours * 60 + minutes);
+  return `${sign}${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
 }
 
 /**

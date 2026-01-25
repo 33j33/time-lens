@@ -22,7 +22,7 @@ export interface SelectionSnapshot {
 // ============================================================================
 
 export interface ParsedTime {
-  /** Original text that was parsed */
+  /** Original text that was parsed (e.g., "3pm PST", "tomorrow at 2pm") */
   originalText: string;
   /** ISO string of the parsed date/time */
   isoString: string;
@@ -30,8 +30,6 @@ export interface ParsedTime {
   sourceZone: string;
   /** Whether the source zone was explicitly in the text vs inferred */
   sourceZoneExplicit: boolean;
-  /** Extracted timezone abbreviation if any (e.g., 'PST', 'EST') */
-  abbreviation?: string;
 }
 
 export interface ConvertedTime {

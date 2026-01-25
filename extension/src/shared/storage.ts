@@ -42,16 +42,6 @@ export async function saveSettings(settings: Settings): Promise<void> {
 }
 
 /**
- * Update specific settings fields
- */
-export async function updateSettings(updates: Partial<Settings>): Promise<Settings> {
-  const current = await loadSettings();
-  const updated = { ...current, ...updates };
-  await saveSettings(updated);
-  return updated;
-}
-
-/**
  * Subscribe to settings changes
  * @returns Unsubscribe function
  */
