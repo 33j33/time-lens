@@ -4,7 +4,7 @@
  */
 
 import type { Settings } from '@/shared/types';
-import { DEFAULT_SETTINGS } from '@/shared/types';
+import { DEFAULT_SETTINGS } from '@/shared/constants';
 import { isEnabledForOrigin, setEnabledForOrigin, getOrigin } from '@/shared/origin-settings';
 import { loadSettings, saveSettings } from '@/shared/storage';
 

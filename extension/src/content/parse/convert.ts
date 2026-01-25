@@ -23,34 +23,41 @@ export function convertTime(
     parseResult.abbreviation
   );
 
+  console.log('[Time Lens] Convert debug:', {
+    matchedText: parseResult.matchedText,
+    date: parseResult.date,
+    dateISO: parseResult.date.toISOString(),
+    explicitOffset: parseResult.explicitOffset,
+    abbreviation: parseResult.abbreviation,
+    hasExplicitTimezone: parseResult.hasExplicitTimezone,
+    sourceZone,
+  });
+
   // Create a DateTime from the parsed date in the source timezone
   let sourceDateTime: DateTime;
 
   try {
-    if (parseResult.explicitOffset) {
-      // Explicit offset like +05:30 or Z in the text - chrono handles these correctly
-      // Just use the date as-is since chrono already adjusted for the offset
-      sourceDateTime = DateTime.fromJSDate(parseResult.date);
+    if (parseResult.hasExplicitTimezone) {
+      // Chrono already parsed and handled the timezone (offset or abbreviation)
+      // The Date object is already in UTC accounting for the timezone
+      // Create DateTime from it and then set to the source zone for display
+      sourceDateTime = DateTime.fromJSDate(parseResult.date, { zone: 'utc' });
+      
+      console.log('[Time Lens] After fromJSDate(utc):', sourceDateTime.toISO());
+      
+      // Now set to the actual source zone (for proper formatting/display)
+      if (sourceZone !== 'local') {
+        const zone = isOffset(sourceZone) ? `UTC${sourceZone}` : sourceZone;
+        sourceDateTime = sourceDateTime.setZone(zone);
+        console.log('[Time Lens] After setZone(' + zone + '):', sourceDateTime.toISO());
+      }
     } else if (sourceZone === 'local') {
-      // Source zone is local (either no explicit TZ in text, or abbreviation mapped to local)
+      // No explicit timezone in text, interpret as local time
       sourceDateTime = DateTime.fromJSDate(parseResult.date);
     } else {
-      // Source zone is an IANA zone or offset (from abbreviation or user settings)
-      // Chrono parses times in local, so we need to re-interpret the time components
-      // in the actual source zone
-      const localDt = DateTime.fromJSDate(parseResult.date);
-      const zone = isOffset(sourceZone) ? `UTC${sourceZone}` : sourceZone;
-      sourceDateTime = DateTime.fromObject(
-        {
-          year: localDt.year,
-          month: localDt.month,
-          day: localDt.day,
-          hour: localDt.hour,
-          minute: localDt.minute,
-          second: localDt.second,
-        },
-        { zone }
-      );
+      // This case shouldn't happen - no explicit timezone but sourceZone isn't local
+      // Fallback to local interpretation
+      sourceDateTime = DateTime.fromJSDate(parseResult.date);
     }
 
     if (!sourceDateTime.isValid) {

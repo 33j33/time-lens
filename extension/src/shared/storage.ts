@@ -3,11 +3,8 @@
  * Handles chrome.storage.sync read/write with defaults
  */
 
-import { DEFAULT_SETTINGS } from '@/shared/types';
 import type { Settings } from '@/shared/types';
-
-/** Storage keys */
-const SETTINGS_KEY = 'settings';
+import { DEFAULT_SETTINGS, SETTINGS_KEY } from '@/shared/constants';
 
 /**
  * Load settings from storage
@@ -82,34 +79,3 @@ export function onSettingsChange(callback: (settings: Settings) => void): () => 
     chrome.storage.onChanged.removeListener(listener);
   };
 }
-
-/**
- * Reset settings to defaults
- */
-export async function resetSettings(): Promise<void> {
-  await saveSettings(DEFAULT_SETTINGS);
-}
-
-/**
- * Export settings as JSON string
- */
-export async function exportSettings(): Promise<string> {
-  const settings = await loadSettings();
-  return JSON.stringify(settings, null, 2);
-}
-
-/**
- * Import settings from JSON string
- */
-export async function importSettings(json: string): Promise<Settings> {
-  try {
-    const parsed = JSON.parse(json) as Partial<Settings>;
-    const merged = { ...DEFAULT_SETTINGS, ...parsed };
-    await saveSettings(merged);
-    return merged;
-  } catch (error) {
-    console.error('[Time Lens] Failed to import settings:', error);
-    throw new Error('Invalid settings JSON');
-  }
-}
-

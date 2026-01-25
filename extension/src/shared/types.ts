@@ -71,28 +71,3 @@ export interface Settings {
   customFormat: string;
 }
 
-// ============================================================================
-// Default Settings
-// ============================================================================
-
-export const DEFAULT_SETTINGS: Settings = {
-  enabledSites: {},
-  defaultTargetZone: 'local',
-  formatPreset: 'system',
-  customFormat: 'ff',
-};
-
-// ============================================================================
-// Message Types (for background <-> content script communication)
-// ============================================================================
-
-export type MessageType = 
-  | { type: 'GET_SETTINGS'; }
-  | { type: 'SETTINGS_UPDATED'; settings: Settings; }
-  | { type: 'INJECTION_COMPLETE'; };
-
-export interface MessageResponse<T = unknown> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}

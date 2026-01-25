@@ -10,11 +10,12 @@ import { DateTime } from 'luxon';
 
 import tokenStyles from '../tokens.css?inline';
 import panelStyles from './panel.css?inline';
-
-const STORAGE_KEY = 'tl-panel-position';
-const DEFAULT_TOP = 16;
-const DEFAULT_RIGHT = 16;
-const VIEWPORT_PADDING = 8;
+import { 
+  PANEL_POSITION_KEY, 
+  PANEL_DEFAULT_TOP, 
+  PANEL_DEFAULT_RIGHT, 
+  PANEL_VIEWPORT_PADDING 
+} from '@/shared/constants';
 
 export interface PanelController {
   show: (result: ParseResult) => void;
@@ -32,17 +33,17 @@ interface Position {
 
 function loadPosition(): Position {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(PANEL_POSITION_KEY);
     if (saved) {
       return JSON.parse(saved);
     }
   } catch {}
-  return { top: DEFAULT_TOP, right: DEFAULT_RIGHT };
+  return { top: PANEL_DEFAULT_TOP, right: PANEL_DEFAULT_RIGHT };
 }
 
 function savePosition(pos: Position): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
+    localStorage.setItem(PANEL_POSITION_KEY, JSON.stringify(pos));
   } catch {}
 }
 
@@ -82,6 +83,17 @@ export function createPanel(
   let dragStartY = 0;
   let dragStartRight = 0;
   let dragStartTop = 0;
+
+  document.documentElement.appendChild(container);
+  
+  // Show panel immediately with empty state
+  renderEmpty();
+  applyPosition();
+  container.setAttribute('data-visible', 'true');
+  wrapper.setAttribute('data-visible', 'true');
+  requestAnimationFrame(() => {
+    panel.setAttribute('data-state', 'visible');
+  });
   
   function applyPosition(): void {
     panel.style.top = `${position.top}px`;
@@ -94,8 +106,8 @@ export function createPanel(
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    position.top = Math.max(VIEWPORT_PADDING, Math.min(position.top, viewportHeight - rect.height - VIEWPORT_PADDING));
-    position.right = Math.max(VIEWPORT_PADDING, Math.min(position.right, viewportWidth - rect.width - VIEWPORT_PADDING));
+    position.top = Math.max(PANEL_VIEWPORT_PADDING, Math.min(position.top, viewportHeight - rect.height - PANEL_VIEWPORT_PADDING));
+    position.right = Math.max(PANEL_VIEWPORT_PADDING, Math.min(position.right, viewportWidth - rect.width - PANEL_VIEWPORT_PADDING));
   }
   
   function handleDragStart(e: PointerEvent): void {
@@ -233,7 +245,6 @@ export function createPanel(
     // Copy parsed time (Row 2)
     panel.querySelectorAll('[data-action="copy-parsed"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        e.preventDefault();
         e.stopPropagation();
         if (currentResult) {
           const { parsed } = currentResult;
@@ -249,7 +260,6 @@ export function createPanel(
     // Copy converted time (Row 3)
     panel.querySelectorAll('[data-action="copy-target"]').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        e.preventDefault();
         e.stopPropagation();
         if (currentResult) {
           copyToClipboard(currentResult.target.formatted, btn as HTMLElement);
@@ -342,17 +352,7 @@ export function createPanel(
     document.removeEventListener('pointerup', handleDragEnd);
     container.remove();
   }
-  
-  document.documentElement.appendChild(container);
-  
-  // Show panel immediately with empty state
-  renderEmpty();
-  applyPosition();
-  container.setAttribute('data-visible', 'true');
-  wrapper.setAttribute('data-visible', 'true');
-  requestAnimationFrame(() => {
-    panel.setAttribute('data-state', 'visible');
-  });
+
   
   return {
     show,

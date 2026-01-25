@@ -4,7 +4,7 @@
  */
 
 import * as chrono from 'chrono-node';
-import { TIMEZONE_ABBREVIATIONS } from './timezone';
+import { TIMEZONE_ABBREVIATIONS, OFFSET_PATTERN, ABBREV_PATTERN } from '@/shared/constants';
 
 export interface ChronoParseResult {
   /** The parsed date */
@@ -22,10 +22,6 @@ export interface ChronoParseResult {
   /** Whether timezone info was explicitly present in the text */
   hasExplicitTimezone: boolean;
 }
-
-// Regex patterns for timezone detection
-const OFFSET_PATTERN = /([+-]\d{1,2}:?\d{2}|Z)\s*$/i;
-const ABBREV_PATTERN = /\b([A-Z]{2,5}T?)\s*$/i;
 
 /**
  * Parse text for date/time information using chrono-node
@@ -51,7 +47,6 @@ export function parseTime(
   try {
     // Parse with chrono-node
     const results = chrono.parse(trimmedText);
-    console.log(results);
     if (signal?.aborted) {
       return null;
     }
@@ -66,6 +61,14 @@ export function parseTime(
     
     // Extract timezone information from the matched text
     const { explicitOffset, abbreviation, hasExplicitTimezone } = extractTimezoneInfo(matchedText);
+    
+    console.log('[Time Lens] Chrono parse debug:', {
+      matchedText,
+      explicitOffset,
+      abbreviation,
+      hasExplicitTimezone,
+      chronoStart: result.start,
+    });
 
     // Get the parsed date
     const date = result.date();

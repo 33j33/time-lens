@@ -4,9 +4,7 @@
  */
 
 import type { Settings } from '@/shared/types';
-
-/** Default enabled state for sites not explicitly configured */
-export const DEFAULT_ENABLED = false;
+import { DEFAULT_ENABLED } from '@/shared/constants';
 
 /**
  * Get the base origin from a URL (e.g., 'https://github.com')

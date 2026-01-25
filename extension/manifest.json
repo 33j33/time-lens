@@ -19,16 +19,17 @@
     "default_popup": "popup/popup.html"
   },
   "permissions": [
-    "scripting",
-    "storage"
+    "storage",
+    "tabs"
   ],
-  "host_permissions": [
-    "<all_urls>"
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/index.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
   ],
-  "background": {
-    "service_worker": "background/sw.js",
-    "type": "module"
-  },
   "web_accessible_resources": [
     {
       "resources": [

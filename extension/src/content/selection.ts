@@ -4,12 +4,7 @@
  */
 
 import type { SelectionSnapshot } from '@/shared/types';
-
-/** Maximum length of selection text to process */
-const MAX_TEXT_LENGTH = 200;
-
-/** Debounce delay for selection changes (ms) */
-const DEBOUNCE_DELAY = 50;
+import { MAX_SELECTION_LENGTH, SELECTION_DEBOUNCE_DELAY } from '@/shared/constants';
 
 /** Current selection version (incremented on each meaningful change) */
 let currentVersion = 0;
@@ -43,7 +38,7 @@ function createSnapshot(): SelectionSnapshot | null {
   
   return {
     version: currentVersion,
-    text: text.slice(0, MAX_TEXT_LENGTH),
+    text: text.slice(0, MAX_SELECTION_LENGTH),
     sourceHint: {
       origin: window.location.origin,
     },
@@ -71,7 +66,7 @@ function handleSelectionChange(): void {
         console.error('[Time Lens] Error in selection callback:', error);
       }
     });
-  }, DEBOUNCE_DELAY);
+  }, SELECTION_DEBOUNCE_DELAY);
 }
 
 /**

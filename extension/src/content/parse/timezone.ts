@@ -3,64 +3,7 @@
  * Maps abbreviations to IANA zones and resolves source zones
  */
 
-/**
- * Common timezone abbreviations mapped to IANA zones or UTC offsets
- * Note: Some abbreviations are ambiguous (e.g., IST could be India, Israel, or Ireland)
- * We use the most common interpretation for each
- */
-export const TIMEZONE_ABBREVIATIONS: Record<string, string> = {
-  // North America
-  'EST': 'America/New_York',
-  'EDT': 'America/New_York',
-  'CST': 'America/Chicago',
-  'CDT': 'America/Chicago',
-  'MST': 'America/Denver',
-  'MDT': 'America/Denver',
-  'PST': 'America/Los_Angeles',
-  'PDT': 'America/Los_Angeles',
-  'AKST': 'America/Anchorage',
-  'AKDT': 'America/Anchorage',
-  'HST': 'Pacific/Honolulu',
-  'AST': 'America/Halifax',
-  'ADT': 'America/Halifax',
-  'NST': 'America/St_Johns',
-  'NDT': 'America/St_Johns',
-
-  // Europe
-  'GMT': 'Europe/London',
-  'BST': 'Europe/London',
-  'WET': 'Europe/Lisbon',
-  'WEST': 'Europe/Lisbon',
-  'CET': 'Europe/Paris',
-  'CEST': 'Europe/Paris',
-  'EET': 'Europe/Helsinki',
-  'EEST': 'Europe/Helsinki',
-  'MSK': 'Europe/Moscow',
-
-  // Asia
-  'IST': 'Asia/Kolkata',      // India Standard Time (most common interpretation)
-  'PKT': 'Asia/Karachi',
-  'BST_BD': 'Asia/Dhaka',     // Bangladesh (avoiding conflict with British Summer Time)
-  'ICT': 'Asia/Bangkok',
-  'WIB': 'Asia/Jakarta',
-  'SGT': 'Asia/Singapore',
-  'HKT': 'Asia/Hong_Kong',
-  'CST_CN': 'Asia/Shanghai',  // China Standard Time
-  'JST': 'Asia/Tokyo',
-  'KST': 'Asia/Seoul',
-
-  // Australia/Pacific
-  'AWST': 'Australia/Perth',
-  'ACST': 'Australia/Adelaide',
-  'AEST': 'Australia/Sydney',
-  'AEDT': 'Australia/Sydney',
-  'NZST': 'Pacific/Auckland',
-  'NZDT': 'Pacific/Auckland',
-
-  // UTC
-  'UTC': 'UTC',
-  'Z': 'UTC',
-};
+import { TIMEZONE_ABBREVIATIONS, COMMON_TIMEZONES } from '@/shared/constants';
 
 /**
  * Get display label for a timezone
@@ -130,42 +73,6 @@ export function isOffset(zone: string): boolean {
  * Get a list of common IANA timezone names for UI dropdowns
  */
 export function getCommonTimezones(): string[] {
-  return [
-    'local',
-    'UTC',
-    // Americas
-    'America/New_York',
-    'America/Chicago',
-    'America/Denver',
-    'America/Los_Angeles',
-    'America/Anchorage',
-    'America/Toronto',
-    'America/Vancouver',
-    'America/Mexico_City',
-    'America/Sao_Paulo',
-    // Europe
-    'Europe/London',
-    'Europe/Paris',
-    'Europe/Berlin',
-    'Europe/Amsterdam',
-    'Europe/Madrid',
-    'Europe/Rome',
-    'Europe/Moscow',
-    // Asia
-    'Asia/Dubai',
-    'Asia/Kolkata',
-    'Asia/Bangkok',
-    'Asia/Singapore',
-    'Asia/Hong_Kong',
-    'Asia/Shanghai',
-    'Asia/Tokyo',
-    'Asia/Seoul',
-    // Australia/Pacific
-    'Australia/Sydney',
-    'Australia/Melbourne',
-    'Australia/Perth',
-    'Pacific/Auckland',
-    'Pacific/Honolulu',
-  ];
+  return COMMON_TIMEZONES;
 }
 

@@ -7,7 +7,7 @@
  * 3. Panel is draggable so user can move it out of the way
  */
 
-import { DEFAULT_SETTINGS } from '@/shared/types';
+import { DEFAULT_SETTINGS } from '@/shared/constants';
 import { isEnabledForOrigin } from '@/shared/origin-settings';
 import type { SelectionSnapshot, Settings, ParseResult } from '@/shared/types';
 import { startSelectionTracking, stopSelectionTracking, registerSelectionChangeCallback } from './selection';
@@ -15,6 +15,25 @@ import { createPanel } from './panel/panel';
 import { parseTime } from './parse/chrono';
 import { convertTime } from './parse/convert';
 import { loadSettings, saveSettings, onSettingsChange as onStorageSettingsChange } from '@/shared/storage';
+
+// ============================================================================
+// Injection Guard - Prevent duplicate script execution
+// ============================================================================
+
+// Check if already injected to prevent duplicate initialization
+declare global {
+  interface Window {
+    __TIME_LENS_INJECTED__?: boolean;
+  }
+}
+
+if (window.__TIME_LENS_INJECTED__) {
+  console.debug('[Time Lens] Content script already injected, skipping initialization');
+  throw new Error('Time Lens already injected'); // Stop execution
+}
+
+// Mark as injected
+window.__TIME_LENS_INJECTED__ = true;
 
 // Current page origin
 const currentOrigin = window.location.origin;

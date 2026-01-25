@@ -50,14 +50,13 @@ const contentConfig = defineConfig({
   publicDir: false, // Don't copy public dir for this build
 });
 
-// Background and popup config (ESM format - service worker needs type: module)
+// Popup config (ESM format)
 const mainConfig = defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true, // Clear dist for the first build
     rollupOptions: {
       input: {
-        'background/sw': resolve(__dirname, 'extension/src/background/sw.ts'),
         'popup/popup': resolve(__dirname, 'extension/src/popup/popup.ts'),
       },
       output: {
