@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
-  <circle cx="64" cy="64" r="54" stroke="#d94f30" stroke-width="6" fill="#faf8f5"/>
-  <path d="M64 32V64L88 88" stroke="#1a1815" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="64" cy="64" r="5" fill="#d94f30"/>
+  <circle cx="64" cy="64" r="54" stroke="#38d9c4" stroke-width="6" fill="#0d0f12"/>
+  <path d="M64 32V64L88 88" stroke="#e4e8ed" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="64" cy="64" r="5" fill="#38d9c4"/>
   <!-- Hour markers -->
-  <circle cx="64" cy="18" r="3" fill="#1a1815"/>
-  <circle cx="110" cy="64" r="3" fill="#1a1815"/>
-  <circle cx="64" cy="110" r="3" fill="#1a1815"/>
-  <circle cx="18" cy="64" r="3" fill="#1a1815"/>
+  <circle cx="64" cy="18" r="3" fill="#8b9aab"/>
+  <circle cx="110" cy="64" r="3" fill="#8b9aab"/>
+  <circle cx="64" cy="110" r="3" fill="#8b9aab"/>
+  <circle cx="18" cy="64" r="3" fill="#8b9aab"/>
 </svg>
 
