@@ -48,39 +48,45 @@
   src: url('chrome-extension://__MSG_@@extension_id__/assets/fonts/ibm-plex-mono/IBMPlexMono-Bold.woff2') format('woff2');
 }
 
-/* Base tokens - Light mode (default) */
+/* Base tokens - Dark mode (default) */
 :host {
-  /* Surfaces */
-  --tl-bg: #faf8f5;
-  --tl-surface: #f5f2ed;
-  --tl-surface2: #ebe7e0;
+  /* Surfaces - deep dark tones */
+  --tl-bg: #0d0f12;
+  --tl-surface: #161a20;
+  --tl-surface2: #1e2329;
+  --tl-surface-hover: #262d36;
   
-  /* Text */
-  --tl-text: #1a1815;
-  --tl-text-secondary: #4a4640;
-  --tl-muted: #8a857d;
+  /* Text - light tones */
+  --tl-text: #e4e8ed;
+  --tl-text-secondary: #8b9aab;
+  --tl-muted: #5a6878;
   
   /* Borders */
-  --tl-border: #d9d4cb;
-  --tl-border-subtle: #e8e4dc;
+  --tl-border: #2a323d;
+  --tl-border-subtle: #1e2329;
   
-  /* Accent - Vermilion */
-  --tl-accent: #d94f30;
-  --tl-accent-hover: #c44528;
-  --tl-accent-ink: #ffffff;
+  /* Accent - Teal */
+  --tl-accent: #38d9c4;
+  --tl-accent-hover: #2ec4b0;
+  --tl-accent-ink: #0d0f12;
+  
+  /* Secondary accents */
+  --tl-accent-amber: #f5b642;
+  --tl-accent-rose: #f56587;
+  --tl-accent-violet: #a78bfa;
   
   /* Focus ring */
-  --tl-ring: rgba(217, 79, 48, 0.4);
+  --tl-ring: rgba(56, 217, 196, 0.4);
   
   /* Shadows */
-  --tl-shadow-color: rgba(26, 24, 21, 0.08);
+  --tl-shadow-color: rgba(0, 0, 0, 0.4);
   --tl-shadow-sm: 0 1px 2px var(--tl-shadow-color);
   --tl-shadow-md: 0 4px 12px var(--tl-shadow-color), 0 2px 4px var(--tl-shadow-color);
   --tl-shadow-lg: 0 8px 24px var(--tl-shadow-color), 0 4px 8px var(--tl-shadow-color);
   
-  /* Paper wash gradients */
-  --tl-paper-wash-a: rgba(250, 248, 245, 0.9);
-  --tl-paper-wash-b: rgba(245, 242, 237, 0.95);
+  /* Gradient wash */
+  --tl-paper-wash-a: rgba(13, 15, 18, 0.95);
+  --tl-paper-wash-b: rgba(22, 26, 32, 0.98);
   
   /* Typography */
   --tl-font-display: 'Newsreader', Georgia, 'Times New Roman', serif;
@@ -97,37 +103,43 @@
   --tl-easing: cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
-/* Dark mode tokens */
-@media (prefers-color-scheme: dark) {
+/* Light mode tokens (optional override) */
+@media (prefers-color-scheme: light) {
   :host {
-    /* Surfaces - soot tones */
-    --tl-bg: #1a1816;
-    --tl-surface: #242220;
-    --tl-surface2: #2e2b28;
+    /* Surfaces - light tones */
+    --tl-bg: #fafbfc;
+    --tl-surface: #f4f6f8;
+    --tl-surface2: #e9ecef;
+    --tl-surface-hover: #dee2e6;
     
-    /* Text - parchment tones */
-    --tl-text: #f0ebe4;
-    --tl-text-secondary: #c4bdb2;
-    --tl-muted: #7a756d;
+    /* Text - dark tones */
+    --tl-text: #1a1d21;
+    --tl-text-secondary: #495057;
+    --tl-muted: #6c757d;
     
-    /* Borders - cocoa */
-    --tl-border: #3d3935;
-    --tl-border-subtle: #302d29;
+    /* Borders */
+    --tl-border: #d4dae0;
+    --tl-border-subtle: #e9ecef;
     
-    /* Accent - Vermilion (slightly brighter for dark mode) */
-    --tl-accent: #e85a3c;
-    --tl-accent-hover: #f06a4c;
-    --tl-accent-ink: #1a1816;
+    /* Accent - Teal (slightly adjusted for light mode) */
+    --tl-accent: #2ec4b0;
+    --tl-accent-hover: #26ad9b;
+    --tl-accent-ink: #ffffff;
+    
+    /* Secondary accents */
+    --tl-accent-amber: #f5b642;
+    --tl-accent-rose: #f56587;
+    --tl-accent-violet: #a78bfa;
     
     /* Focus ring */
-    --tl-ring: rgba(232, 90, 60, 0.5);
+    --tl-ring: rgba(46, 196, 176, 0.4);
     
     /* Shadows */
-    --tl-shadow-color: rgba(0, 0, 0, 0.3);
+    --tl-shadow-color: rgba(26, 29, 33, 0.08);
     
-    /* Paper wash gradients */
-    --tl-paper-wash-a: rgba(26, 24, 22, 0.95);
-    --tl-paper-wash-b: rgba(36, 34, 32, 0.98);
+    /* Gradient wash */
+    --tl-paper-wash-a: rgba(250, 251, 252, 0.9);
+    --tl-paper-wash-b: rgba(244, 246, 248, 0.95);
   }
 }
 
