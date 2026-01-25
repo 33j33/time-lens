@@ -4,13 +4,16 @@
  */
 
 import type { SelectionSnapshot } from '@/shared/types';
-import { MAX_SELECTION_LENGTH, SELECTION_DEBOUNCE_DELAY } from '@/shared/constants';
+import { MAX_SELECTION_LENGTH } from '@/shared/constants';
 
 /** Current selection version (incremented on each meaningful change) */
 let currentVersion = 0;
 
-/** Debounce timer */
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+/** Track if pointer/mouse is currently pressed (during active selection) */
+let isPointerDown = false;
+
+/** Track if we need to process selection after pointer release */
+let pendingSelectionChange = false;
 
 /** Callback for selection changes */
 type SelectionChangeCallback = (snapshot: SelectionSnapshot | null) => void;
@@ -46,27 +49,56 @@ function createSnapshot(): SelectionSnapshot | null {
 }
 
 /**
+ * Process the current selection and notify callbacks
+ */
+function processSelection(): void {
+  const snapshot = createSnapshot();
+  
+  // Notify all callbacks
+  callbacks.forEach((callback) => {
+    try {
+      callback(snapshot);
+    } catch (error) {
+      console.error('[Time Lens] Error in selection callback:', error);
+    }
+  });
+  
+  pendingSelectionChange = false;
+}
+
+/**
  * Handle selection change event
+ * Only processes immediately if pointer is not down (not actively selecting)
  */
 function handleSelectionChange(): void {
-  // Clear any pending debounce
-  if (debounceTimer !== null) {
-    clearTimeout(debounceTimer);
+  if (isPointerDown) {
+    // User is actively selecting - mark as pending but don't process yet
+    pendingSelectionChange = true;
+    return;
   }
   
-  // Debounce the actual processing
-  debounceTimer = setTimeout(() => {
-    const snapshot = createSnapshot();
-    
-    // Notify all callbacks
-    callbacks.forEach((callback) => {
-      try {
-        callback(snapshot);
-      } catch (error) {
-        console.error('[Time Lens] Error in selection callback:', error);
-      }
-    });
-  }, SELECTION_DEBOUNCE_DELAY);
+  // Process immediately for keyboard selections or cleared selections
+  processSelection();
+}
+
+/**
+ * Handle pointer down - user started selecting
+ */
+function handlePointerDown(): void {
+  isPointerDown = true;
+  pendingSelectionChange = false;
+}
+
+/**
+ * Handle pointer up - user finished selecting
+ */
+function handlePointerUp(): void {
+  isPointerDown = false;
+  
+  // If there was a pending selection change, process it now
+  if (pendingSelectionChange) {
+    processSelection();
+  }
 }
 
 /**
@@ -86,6 +118,8 @@ export function registerSelectionChangeCallback(callback: SelectionChangeCallbac
  */
 export function startSelectionTracking(): void {
   document.addEventListener('selectionchange', handleSelectionChange);
+  document.addEventListener('pointerdown', handlePointerDown);
+  document.addEventListener('pointerup', handlePointerUp);
 }
 
 /**
@@ -93,9 +127,10 @@ export function startSelectionTracking(): void {
  */
 export function stopSelectionTracking(): void {
   document.removeEventListener('selectionchange', handleSelectionChange);
+  document.removeEventListener('pointerdown', handlePointerDown);
+  document.removeEventListener('pointerup', handlePointerUp);
   
-  if (debounceTimer !== null) {
-    clearTimeout(debounceTimer);
-    debounceTimer = null;
-  }
+  // Reset state
+  isPointerDown = false;
+  pendingSelectionChange = false;
 }

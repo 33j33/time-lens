@@ -46,9 +46,6 @@ export const PANEL_VIEWPORT_PADDING = 8;
 /** Maximum length of selection text to process */
 export const MAX_SELECTION_LENGTH = 200;
 
-/** Debounce delay for selection changes (ms) */
-export const SELECTION_DEBOUNCE_DELAY = 50;
-
 // ============================================================================
 // Timezone Parsing
 // ============================================================================
