@@ -11,14 +11,10 @@
       --bg-deep: #0d0f12;
       --bg-surface: #161a20;
       --bg-raised: #1e2329;
-      --bg-hover: #262d36;
       --text-primary: #e4e8ed;
       --text-secondary: #8b9aab;
       --text-muted: #5a6878;
-      --accent-teal: #38d9c4;
-      --accent-amber: #f5b642;
-      --accent-rose: #f56587;
-      --accent-violet: #a78bfa;
+      --accent-primary: #38d9c4;
       --border: #2a323d;
       --radius: 12px;
     }
@@ -45,7 +41,7 @@
       inset: 0;
       background: 
         radial-gradient(ellipse 80% 50% at 20% 0%, rgba(56, 217, 196, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(167, 139, 250, 0.06) 0%, transparent 50%);
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(56, 217, 196, 0.04) 0%, transparent 50%);
       pointer-events: none;
       z-index: -1;
     }
@@ -65,7 +61,7 @@
       font-weight: 600;
       letter-spacing: -0.02em;
       margin-bottom: 0.75rem;
-      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-teal) 100%);
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-primary) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -82,21 +78,9 @@
     }
     
     .category-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
       margin-bottom: 1.25rem;
       padding-bottom: 0.75rem;
       border-bottom: 1px solid var(--border);
-    }
-    
-    .category-icon {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
     }
     
     h2 {
@@ -120,7 +104,7 @@
     
     .example:hover {
       background: var(--bg-raised);
-      border-color: var(--accent-teal);
+      border-color: var(--accent-primary);
       transform: translateX(4px);
     }
     
@@ -128,7 +112,7 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 1rem;
       font-weight: 500;
-      color: var(--accent-teal);
+      color: var(--accent-primary);
       margin-bottom: 0.35rem;
       cursor: default;
     }
@@ -136,19 +120,6 @@
     .time-description {
       font-size: 0.9rem;
       color: var(--text-secondary);
-    }
-    
-    /* Accent variations */
-    .category:nth-child(odd) .time-value {
-      color: var(--accent-teal);
-    }
-    
-    .category:nth-child(even) .time-value {
-      color: var(--accent-amber);
-    }
-    
-    .category:nth-child(3n) .time-value {
-      color: var(--accent-violet);
     }
     
     /* Inline times for prose sections */
@@ -164,7 +135,7 @@
       font-size: 1.1rem;
       font-weight: 600;
       margin-bottom: 1rem;
-      color: var(--accent-rose);
+      color: var(--accent-primary);
     }
     
     .prose p {
@@ -181,7 +152,7 @@
       background: var(--bg-raised);
       padding: 0.15em 0.5em;
       border-radius: 4px;
-      color: var(--accent-teal);
+      color: var(--accent-primary);
       font-size: 0.95em;
       white-space: nowrap;
     }
@@ -196,7 +167,7 @@
     }
     
     footer a {
-      color: var(--accent-teal);
+      color: var(--accent-primary);
       text-decoration: none;
     }
     
@@ -206,8 +177,8 @@
     
     /* Instructions callout */
     .instructions {
-      background: linear-gradient(135deg, rgba(56, 217, 196, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%);
-      border: 1px solid var(--accent-teal);
+      background: linear-gradient(135deg, rgba(56, 217, 196, 0.1) 0%, rgba(56, 217, 196, 0.05) 100%);
+      border: 1px solid var(--accent-primary);
       border-radius: var(--radius);
       padding: 1.25rem 1.5rem;
       margin-bottom: 3rem;
@@ -219,18 +190,7 @@
     }
     
     .instructions strong {
-      color: var(--accent-teal);
-    }
-    
-    .kbd {
-      display: inline-block;
-      background: var(--bg-raised);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.15em 0.5em;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.85em;
-      color: var(--text-primary);
+      color: var(--accent-primary);
     }
   </style>
 </head>
@@ -243,16 +203,15 @@
     
     <div class="instructions">
       <p>
-        <strong>How to use:</strong> Select any time value on this page, or hover over it 
-        with the Time Lens extension active. The extension will parse and convert the time 
-        to your configured timezone(s).
+        <strong>How to use:</strong> Select any time value on this page with the Time Lens 
+        extension active. The extension will parse the selected text and display timezone 
+        conversions in a draggable tooltip panel.
       </p>
     </div>
 
     <!-- ISO 8601 Formats -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>ISO 8601 Formats</h2>
       </div>
       <div class="examples-grid">
@@ -282,7 +241,6 @@
     <!-- With Timezone Abbreviations -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Timezone Abbreviations</h2>
       </div>
       <div class="examples-grid">
@@ -324,7 +282,6 @@
     <!-- Natural Language -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Natural Language</h2>
       </div>
       <div class="examples-grid">
@@ -358,7 +315,6 @@
     <!-- Relative Times -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Relative Times</h2>
       </div>
       <div class="examples-grid">
@@ -392,7 +348,6 @@
     <!-- Standard Date Formats -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Standard Date Formats</h2>
       </div>
       <div class="examples-grid">
@@ -426,7 +381,6 @@
     <!-- Date + Time Combinations -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Date &amp; Time Combinations</h2>
       </div>
       <div class="examples-grid">
@@ -456,7 +410,6 @@
     <!-- Time-Only Formats -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Time-Only Formats</h2>
       </div>
       <div class="examples-grid">
@@ -490,7 +443,6 @@
     <!-- Explicit Offsets -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Explicit UTC Offsets</h2>
       </div>
       <div class="examples-grid">
@@ -521,51 +473,57 @@
       </div>
     </section>
 
-    <!-- Prose Example -->
-    <section class="prose">
-      <h3>Real-World Example: Email Thread</h3>
-      <p>
-        Hey team! Just a reminder that our sync is scheduled for 
-        <span class="time-inline">tomorrow at 10:00 AM PST</span>. 
-        If you're joining from the London office, that's 
-        <span class="time-inline">6:00 PM GMT</span>.
-      </p>
-      <p>
-        The deadline for the Q1 report is <span class="time-inline">January 15, 2025 at 5:00 PM EST</span>. 
-        Please make sure all your updates are submitted <span class="time-inline">at least 2 hours</span> before.
-      </p>
-      <p>
-        The API maintenance window is from <span class="time-inline">2025-01-04T02:00:00Z</span> 
-        to <span class="time-inline">2025-01-04T04:00:00Z</span>. Plan accordingly!
-      </p>
+    <section class="category">
+      <div class="category-header">
+        <h2>Real-World Examples</h2>
+      </div>
+     
+      <section class="prose">
+        <h3>Email Thread</h3>
+        <p>
+          Hey team! Just a reminder that our sync is scheduled for
+          <span class="time-inline">tomorrow at 10:00 AM PST</span>.
+          If you're joining from the London office, that's
+          <span class="time-inline">6:00 PM GMT</span>.
+        </p>
+        <p>
+          The deadline for the Q1 report is <span class="time-inline">January 15, 2025 at 5:00 PM EST</span>.
+          Please make sure all your updates are submitted <span class="time-inline">at least 2 hours</span> before.
+        </p>
+        <p>
+          The API maintenance window is from <span class="time-inline">2025-01-04T02:00:00Z</span>
+          to <span class="time-inline">2025-01-04T04:00:00Z</span>. Plan accordingly!
+        </p>
+      </section>
+
+      <section class="prose">
+        <h3>Event Listing</h3>
+        <p>
+          <strong>Tech Conference 2025</strong><br>
+          San Francisco, CA<br>
+          <span class="time-inline">March 15-17, 2025</span><br>
+          Keynote: <span class="time-inline">March 15, 2025 at 9:00 AM PST</span><br>
+          Lunch: <span class="time-inline">12:30 PM</span><br>
+          After-party: <span class="time-inline">next Saturday at 7pm</span>
+        </p>
+      </section>
+      
+      <section class="prose">
+        <h3>Notification Log</h3>
+        <p>
+          • Build completed <span class="time-inline">5 minutes ago</span><br>
+          • Deployment scheduled for <span class="time-inline">in 30 minutes</span><br>
+          • Last backup: <span class="time-inline">2025-01-02T23:00:00+00:00</span><br>
+          • Next maintenance: <span class="time-inline">next Sunday at midnight</span>
+        </p>
+      </section>
+
     </section>
 
-    <section class="prose">
-      <h3>Real-World Example: Event Listing</h3>
-      <p>
-        <strong>Tech Conference 2025</strong><br>
-        San Francisco, CA<br>
-        <span class="time-inline">March 15-17, 2025</span><br>
-        Keynote: <span class="time-inline">March 15, 2025 at 9:00 AM PST</span><br>
-        Lunch: <span class="time-inline">12:30 PM</span><br>
-        After-party: <span class="time-inline">next Saturday at 7pm</span>
-      </p>
-    </section>
-
-    <section class="prose">
-      <h3>Real-World Example: Notification Log</h3>
-      <p>
-        • Build completed <span class="time-inline">5 minutes ago</span><br>
-        • Deployment scheduled for <span class="time-inline">in 30 minutes</span><br>
-        • Last backup: <span class="time-inline">2025-01-02T23:00:00+00:00</span><br>
-        • Next maintenance: <span class="time-inline">next Sunday at midnight</span>
-      </p>
-    </section>
 
     <!-- Unix/Epoch Timestamps -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Technical Formats</h2>
       </div>
       <div class="examples-grid">
@@ -587,7 +545,6 @@
     <!-- Edge Cases -->
     <section class="category">
       <div class="category-header">
-        <div class="category-icon"></div>
         <h2>Edge Cases &amp; Special Formats</h2>
       </div>
       <div class="examples-grid">
@@ -620,9 +577,10 @@
 
     <footer>
       <p>
-        Time Lens Extension — Select or hover over any time to convert it.<br>
-        Powered by <a href="https://github.com/wanasit/chrono" target="_blank">chrono-node</a> 
-        and <a href="https://moment.github.io/luxon/" target="_blank">Luxon</a>
+        <strong>Time Lens</strong> — A lightweight Chrome extension for intelligent date/time parsing and timezone conversion.<br>
+        Select any time on this page to see conversions in a draggable tooltip panel.<br>
+        Built with <a href="https://github.com/wanasit/chrono" target="_blank">chrono-node</a> for parsing 
+        and <a href="https://moment.github.io/luxon/" target="_blank">Luxon</a> for timezone conversion.
       </p>
     </footer>
   </div>
