@@ -9,7 +9,6 @@
       --bg: #0d0f12;
       --surface: #161a20;
       --surface2: #1e2329;
-      --surface-hover: #262d36;
       --text: #e4e8ed;
       --text-secondary: #8b9aab;
       --muted: #5a6878;
@@ -29,7 +28,6 @@
         --bg: #fafbfc;
         --surface: #f4f6f8;
         --surface2: #e9ecef;
-        --surface-hover: #dee2e6;
         --text: #1a1d21;
         --text-secondary: #495057;
         --muted: #6c757d;
@@ -89,11 +87,6 @@
       margin-bottom: 16px;
     }
 
-    .enable-btns {
-      display: flex;
-      gap: 8px;
-    }
-
     .btn {
       flex: 1;
       display: flex;
@@ -120,27 +113,6 @@
     .btn:focus-visible {
       outline: none;
       box-shadow: 0 0 0 2px var(--ring);
-    }
-
-    .btn--primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--accent-ink);
-    }
-
-    .btn--primary:hover {
-      background: var(--accent-hover);
-      border-color: var(--accent-hover);
-    }
-
-    .btn--disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .btn-icon {
-      width: 14px;
-      height: 14px;
     }
 
     /* Toggle button */
@@ -240,11 +212,6 @@
       font-size: 12px;
       font-weight: 500;
       color: var(--text);
-    }
-
-    .field-hint {
-      font-size: 11px;
-      color: var(--muted);
     }
 
     select {

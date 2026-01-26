@@ -54,7 +54,6 @@
   --tl-bg: #0d0f12;
   --tl-surface: #161a20;
   --tl-surface2: #1e2329;
-  --tl-surface-hover: #262d36;
   
   /* Text - light tones */
   --tl-text: #e4e8ed;
@@ -67,21 +66,13 @@
   
   /* Accent - Teal */
   --tl-accent: #38d9c4;
-  --tl-accent-hover: #2ec4b0;
   --tl-accent-ink: #0d0f12;
-  
-  /* Secondary accents */
-  --tl-accent-amber: #f5b642;
-  --tl-accent-rose: #f56587;
-  --tl-accent-violet: #a78bfa;
   
   /* Focus ring */
   --tl-ring: rgba(56, 217, 196, 0.4);
   
   /* Shadows */
   --tl-shadow-color: rgba(0, 0, 0, 0.4);
-  --tl-shadow-sm: 0 1px 2px var(--tl-shadow-color);
-  --tl-shadow-md: 0 4px 12px var(--tl-shadow-color), 0 2px 4px var(--tl-shadow-color);
   --tl-shadow-lg: 0 8px 24px var(--tl-shadow-color), 0 4px 8px var(--tl-shadow-color);
   
   /* Gradient wash */
@@ -94,7 +85,6 @@
   
   /* Sizing */
   --tl-radius-sm: 4px;
-  --tl-radius-md: 8px;
   --tl-radius-lg: 12px;
   
   /* Animation */
@@ -110,7 +100,6 @@
     --tl-bg: #fafbfc;
     --tl-surface: #f4f6f8;
     --tl-surface2: #e9ecef;
-    --tl-surface-hover: #dee2e6;
     
     /* Text - dark tones */
     --tl-text: #1a1d21;
@@ -123,13 +112,7 @@
     
     /* Accent - Teal (slightly adjusted for light mode) */
     --tl-accent: #2ec4b0;
-    --tl-accent-hover: #26ad9b;
     --tl-accent-ink: #ffffff;
-    
-    /* Secondary accents */
-    --tl-accent-amber: #f5b642;
-    --tl-accent-rose: #f56587;
-    --tl-accent-violet: #a78bfa;
     
     /* Focus ring */
     --tl-ring: rgba(46, 196, 176, 0.4);
