@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite';
+import { defineConfig, build as viteBuild } from 'vite';
 import { resolve } from 'path';
 import { copyFileSync, mkdirSync, existsSync, readdirSync, statSync } from 'fs';
 
@@ -20,41 +20,22 @@ function copyDir(src: string, dest: string): void {
   }
 }
 
-// Determine which build to run based on environment variable
-const buildTarget = process.env.BUILD_TARGET || 'all';
-
-// Content script config (IIFE format - required for chrome.scripting.executeScript)
-const contentConfig = defineConfig({
-  build: {
-    outDir: 'dist',
-    emptyOutDir: false, // Don't clear - other builds write here too
-    rollupOptions: {
-      input: {
-        'content/index': resolve(__dirname, 'extension/src/content/index.ts'),
-      },
-      output: {
-        format: 'iife',
-        entryFileNames: '[name].js',
-        assetFileNames: 'assets/[name]-[hash][extname]',
-      },
-    },
-    target: 'esnext',
-    minify: 'esbuild',
-    sourcemap: false,
-  },
+// Shared config
+const sharedConfig = {
   resolve: {
     alias: {
       '@': resolve(__dirname, 'extension/src'),
     },
   },
-  publicDir: false, // Don't copy public dir for this build
-});
+  target: 'esnext' as const,
+  minify: 'esbuild' as const,
+  sourcemap: false,
+};
 
-// Popup config (ESM format)
-const mainConfig = defineConfig({
+export default defineConfig({
   build: {
     outDir: 'dist',
-    emptyOutDir: true, // Clear dist for the first build
+    emptyOutDir: true,
     rollupOptions: {
       input: {
         'popup/popup': resolve(__dirname, 'extension/src/popup/popup.ts'),
@@ -66,17 +47,38 @@ const mainConfig = defineConfig({
         assetFileNames: 'assets/[name]-[hash][extname]',
       },
     },
-    target: 'esnext',
-    minify: 'esbuild',
-    sourcemap: false,
+    ...sharedConfig,
   },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, 'extension/src'),
-    },
-  },
+  resolve: sharedConfig.resolve,
   publicDir: 'extension/public',
   plugins: [
+    {
+      name: 'build-content-script',
+      async closeBundle() {
+        // Build content script as IIFE in a separate pass
+        await viteBuild({
+          configFile: false,
+          build: {
+            outDir: 'dist',
+            emptyOutDir: false,
+            rollupOptions: {
+              input: {
+                'content/index': resolve(__dirname, 'extension/src/content/index.ts'),
+              },
+              output: {
+                format: 'iife',
+                entryFileNames: '[name].js',
+              },
+            },
+            ...sharedConfig,
+          },
+          resolve: sharedConfig.resolve,
+          publicDir: false,
+        });
+        
+        console.log('Built content script as IIFE');
+      },
+    },
     {
       name: 'copy-manifest-and-assets',
       closeBundle() {
@@ -104,6 +106,3 @@ const mainConfig = defineConfig({
     },
   ],
 });
-
-// Export the appropriate config based on BUILD_TARGET
-export default buildTarget === 'content' ? contentConfig : mainConfig;

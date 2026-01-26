@@ -5,9 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch --mode development",
-    "build": "vite build && BUILD_TARGET=content vite build",
-    "build:main": "vite build",
-    "build:content": "BUILD_TARGET=content vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
